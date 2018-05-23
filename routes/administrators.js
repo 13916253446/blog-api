@@ -22,8 +22,7 @@ router.all('/login', (req, res) => {
     return;
   }
   AdminModel.findOne({
-    userCode,
-    password
+    userCode
   }, (err, admin) => {
     console.log(err);
     console.log(admin);
@@ -31,7 +30,12 @@ router.all('/login', (req, res) => {
       res.json(stringifyModel.errorData(err));
     } else {
       if (!!admin) {
-        res.json(stringifyModel.okData([admin]));
+        let { password: pwd = '' } = admin;
+        if (pwd === password) {
+          res.json(stringifyModel.okData([admin]));
+        } else {
+          res.json(stringifyModel.errorData('密码不正确'));
+        }
       } else {
         res.json(stringifyModel.errorData('管理员不存在'));
       }
